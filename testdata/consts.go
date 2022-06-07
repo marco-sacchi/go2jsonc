@@ -1,0 +1,20 @@
+package testdata
+
+type ConstType int
+
+const (
+	// ConstTypeA doc block.
+	ConstTypeA ConstType = iota // ConstTypeA comment.
+	ConstTypeB                  // ConstTypeB comment.
+	// ConstTypeC doc block.
+	ConstTypeC // ConstTypeC comment.
+)
+
+const (
+	// ConstTypeD doc block.
+	ConstTypeD ConstType = 1 << (iota + 5)
+	// ConstTypeE doc block.
+	ConstTypeE // ConstTypeE comment.
+	// ConstTypeF doc block.
+	ConstTypeF // ConstTypeF comment.
+)
