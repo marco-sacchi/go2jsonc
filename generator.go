@@ -1,22 +1,25 @@
-package main
+// Package go2jsonc generates the jsonc code from the information extracted
+// from the AST via the distiller package.
+package go2jsonc
 
 import (
 	"fmt"
+	"github.com/marco-sacchi/go2jsonc/distiller"
 	"go/constant"
 	"go/types"
 	"log"
 	"strings"
 )
 
-// GenerateJSONC generates JSONC indented code.
-func GenerateJSONC(dir, typeName string) (string, error) {
-	pkgInfo, err := NewPackageInfo(dir, typeName)
+// Generate generates JSONC indented code.
+func Generate(dir, typeName string) (string, error) {
+	pkgInfo, err := distiller.NewPackageInfo(dir, typeName)
 	if err != nil {
 		return "", err
 	}
 
-	s, ok := pkgInfo.Structs[pkgInfo.Package.PkgPath+"."+typeName]
-	if !ok {
+	s := distiller.LookupStruct(pkgInfo.Package.PkgPath + "." + typeName)
+	if s == nil {
 		return "", fmt.Errorf("cannot find struct %s in package %s", typeName, pkgInfo.Package.Name)
 	}
 
@@ -30,7 +33,8 @@ func GenerateJSONC(dir, typeName string) (string, error) {
 }
 
 // renderStruct renders JSONC indented code for specified struct and all nested or embedded ones recursively.
-func renderStruct(info *StructInfo, defaults interface{}, indent string, embedded bool, parentShadowing []string) (string, error) {
+func renderStruct(info *distiller.StructInfo, defaults interface{}, indent string,
+	embedded bool, parentShadowing []string) (string, error) {
 	var builder strings.Builder
 
 	if !embedded {
@@ -45,6 +49,7 @@ func renderStruct(info *StructInfo, defaults interface{}, indent string, embedde
 		}
 	}
 
+	comma := ""
 	for i, field := range info.Fields {
 		name := field.Name
 
@@ -53,6 +58,8 @@ func renderStruct(info *StructInfo, defaults interface{}, indent string, embedde
 			(embedded && lastIndexOf(parentShadowing, name) != -1) {
 			continue
 		}
+
+		builder.WriteString(comma)
 
 		if jsonName, ok := field.Tags["json"]; ok == true {
 			name = jsonName
@@ -72,7 +79,7 @@ func renderStruct(info *StructInfo, defaults interface{}, indent string, embedde
 			value, ok = defaults.(map[string]interface{})[key]
 		}
 
-		consts := lookupTypedConsts(field.Type.String())
+		consts := distiller.LookupTypedConsts(field.Type.String())
 
 		if !ok {
 			if consts != nil {
@@ -95,7 +102,7 @@ func renderStruct(info *StructInfo, defaults interface{}, indent string, embedde
 				}
 			}
 		} else {
-			subInfo := lookupStruct(field.Type.String())
+			subInfo := distiller.LookupStruct(field.Type.String())
 			if subInfo == nil {
 				return "", fmt.Errorf("cannot lookup structure %s", field.Type.String())
 			}
@@ -128,18 +135,24 @@ func renderStruct(info *StructInfo, defaults interface{}, indent string, embedde
 			builder.WriteString(fmt.Sprintf("%v", value))
 		} else {
 			builder.WriteString(field.FormatDoc(indent))
-			builder.WriteString(fmt.Sprintf("%s\"%s\": %v,\n", indent, name, value))
+			builder.WriteString(fmt.Sprintf("%s\"%s\": %v", indent, name, value))
 		}
+
+		comma = ",\n"
 	}
 
 	if !embedded {
-		indent = indent[:len(indent)-1]
-		builder.WriteString(indent + "}")
+		if comma != "" {
+			builder.WriteString("\n")
+		}
+
+		builder.WriteString(indent[:len(indent)-1] + "}")
 	}
 
 	return builder.String(), nil
 }
 
+// lastIndexOf returns the last slice index of specified value.
 func lastIndexOf(slice []string, value string) int {
 	if slice != nil {
 		for i := len(slice) - 1; i >= 0; i-- {
@@ -152,7 +165,8 @@ func lastIndexOf(slice []string, value string) int {
 	return -1
 }
 
-func typeZero(field *FieldInfo) interface{} {
+// typeZero return the default uninitialized value for specified field.
+func typeZero(field *distiller.FieldInfo) interface{} {
 	var value interface{}
 	if field.IsArray {
 		value = make([]interface{}, 0)

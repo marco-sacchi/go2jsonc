@@ -1,4 +1,4 @@
-package main
+package distiller
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ type StructInfo struct {
 
 	// If a function with following signature:
 	//
-	//     func (struct-name) Defaults() *struct-name
+	//     func <StructName>Defaults() *StructName
 	//
 	// is found on the same package where the struct is declared
 	// it will be parsed to extract default values for all fields.

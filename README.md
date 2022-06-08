@@ -8,12 +8,21 @@ templates.
 Any struct embedded or nested in the starting one will be included, even when
 coming from different packages.
 
+The typed constants are resolved and included in the comments of generated
+code to make it easier to verify and modify the values.
+
+go2jsonc is written in such a way that parsing and extraction of the necessary
+data from the AST and the types are decoupled from the generation of the jsonc
+file, making it possible to write virtually any format.
+
 ## Default values
 
 If a function that matches the signature:
+
 ```go
 func StructTypeNameDefaults() *StructTypeName
 ```
+
 exists in the same package for which you are generating the jsonc code, it
 will be parsed to extract the default values for each field. Note that for
 simplicity of parsing the body must have the syntax visible below in the
@@ -22,6 +31,7 @@ rendering example.
 ## Rendering example
 
 Source code:
+
 ```go
 package multipkg
 
@@ -88,10 +98,10 @@ type Info struct {
     PacketLoss    int `json:"packet_loss"`     // Packet loss comment.
     RoundTripTime int `json:"round_trip_time"` // Round-trip time in milliseconds.
 }
-
 ```
 
 Rendered output:
+
 ```json5
 {
     // network.Status - Network status.
@@ -105,21 +115,29 @@ Rendered output:
         // StateConnected = 2
         // StateFailed = 5
         // StateReconnecting = 6
-        "State": 0,
+        "State": 0
     },
     // int - PacketLoss documentation block.
     // Packet loss comment.
     "packet_loss": 64,
     // int - Round-trip time in milliseconds.
-    "round_trip_time": 123,
+    "round_trip_time": 123
 }
-
 ```
 
-## Run as a standalone program
+## Installation
+
+From the repository root directory run:
+
+```shell
+go install ./cmd/go2jsonc
+```
+
+## Running as a standalone program
 
 When run as a standalone program, the syntax is as follows:
-```
+
+```shell
 go2jsonc -type=type-name -out=outfile.jsonc [package-dir]
 ```
 
@@ -132,6 +150,7 @@ from a path outside the package that contains the specified type.
 
 To run go2jsonc as a generator just add the `go:generate` comments where
 desired, using the same syntax used above:
+
 ```
 //go:generate go2jsonc -type=type-name -out=outfile.jsonc [package-dir]
 ```
@@ -139,11 +158,22 @@ desired, using the same syntax used above:
 `package-dir` can be safely omitted in this use case. The directory of the file
 in which the comment is present will be used.
 
-## Minor notes
+## Importing packages
 
-go2jsonc is written in such a way that parsing and extraction of the necessary
-data from the AST and the types are decoupled from the generation of the jsonc
-file, making it possible to write virtually any format.
+go2jsonc contains two packages:
+- go2jsonc
+- go2jsonc/distiller
+
+You can import the first one and use the function:
+
+```go
+func Generate(dir, typeName string) (string, error)
+```
+
+to generate jsonc code from the specified package and type.
+
+Or you can import the latter to easily extract information from the AST and
+render other formats.
 
 ## License
 

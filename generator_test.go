@@ -1,4 +1,4 @@
-package main
+package go2jsonc
 
 import (
 	"os"
@@ -19,7 +19,7 @@ func TestGenerator(t *testing.T) {
 
 	whitespacesReplacer := strings.NewReplacer(" ", "◦", "\t", "➞➞➞➞")
 	for _, test := range tests {
-		jsonc, err := GenerateJSONC("./testdata", test.typeName)
+		jsonc, err := Generate("./testdata", test.typeName)
 		if err != nil {
 			t.Fatal(err)
 		}

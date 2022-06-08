@@ -10,5 +10,5 @@
 	// float32
 	"accel": 0.23,
 	// string - Shadowing field.
-	"reserved": "Shadowing",
+	"reserved": "Shadowing"
 }

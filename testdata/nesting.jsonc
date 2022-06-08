@@ -12,7 +12,7 @@
 		// int - Major version.
 		"Major": 1,
 		// int - Minor version.
-		"Minor": 0,
+		"Minor": 0
 	},
 	// testdata.Protocol[] - Optional supported protocols.
 	"optional_protos": [
@@ -24,7 +24,7 @@
 			// int - Major version.
 			"Major": 1,
 			// int - Minor version.
-			"Minor": 0,
+			"Minor": 0
 		},
 		{
 			// string - Name describes the protocol name.
@@ -34,7 +34,7 @@
 			// int - Major version.
 			"Major": 1,
 			// int - Minor version.
-			"Minor": 1,
+			"Minor": 1
 		}
-	],
+	]
 }

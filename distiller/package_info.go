@@ -1,4 +1,4 @@
-package main
+package distiller
 
 import (
 	"fmt"
@@ -22,9 +22,9 @@ type PackageInfo struct {
 // loadedPackages caches the loaded/imported packages.
 var loadedPackages = make(map[string]*PackageInfo)
 
-// lookupStruct searches loaded packages for the specified fully qualified struct name.
+// LookupStruct searches loaded packages for the specified fully qualified struct name.
 // It returns nil in case of no matches.
-func lookupStruct(name string) *StructInfo {
+func LookupStruct(name string) *StructInfo {
 	for _, pkg := range loadedPackages {
 		s, ok := pkg.Structs[name]
 		if ok {
@@ -35,9 +35,9 @@ func lookupStruct(name string) *StructInfo {
 	return nil
 }
 
-// lookupTypedConsts searches loaded packages for declared constants of specified fully qualified named type.
+// LookupTypedConsts searches loaded packages for declared constants of specified fully qualified named type.
 // It returns nil in case of no matches.
-func lookupTypedConsts(name string) []*ConstInfo {
+func LookupTypedConsts(name string) []*ConstInfo {
 	var consts []*ConstInfo = nil
 	for _, pkg := range loadedPackages {
 		c, ok := pkg.TypedConsts[name]

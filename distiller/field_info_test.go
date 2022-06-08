@@ -1,4 +1,4 @@
-package main
+package distiller
 
 import (
 	"github.com/marco-sacchi/go2jsonc/testutils"
@@ -8,7 +8,7 @@ import (
 )
 
 func TestFieldInfo(t *testing.T) {
-	dirs := []string{"./testdata"}
+	dirs := []string{"../testdata"}
 	testFieldInfo(t, dirs, []*testutils.FieldInfo{
 		// testdata/embedding.go
 		{
@@ -139,9 +139,9 @@ func TestFieldInfo(t *testing.T) {
 
 func TestFieldInfoMultiPackage(t *testing.T) {
 	dirs := []string{
-		"./testdata/multipkg/network",
-		"./testdata/multipkg/stats",
-		"./testdata/multipkg",
+		"../testdata/multipkg/network",
+		"../testdata/multipkg/stats",
+		"../testdata/multipkg",
 	}
 	testFieldInfo(t, dirs, []*testutils.FieldInfo{
 		// testdata/multipkg/status.go

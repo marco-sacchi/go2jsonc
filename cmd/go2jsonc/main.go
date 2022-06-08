@@ -1,12 +1,14 @@
+// go2jsonc standalone executable and go generator application package.
 package main
 
 import (
 	"flag"
+	"github.com/marco-sacchi/go2jsonc"
 	"log"
 	"os"
 )
 
-const version = "0.1.0"
+const version = "0.2.0"
 
 func main() {
 	flag.Usage = usage
@@ -37,7 +39,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	code, err := GenerateJSONC(dir, *typeName)
+	code, err := go2jsonc.Generate(dir, *typeName)
 	if err != nil {
 		log.Fatal(err)
 	}

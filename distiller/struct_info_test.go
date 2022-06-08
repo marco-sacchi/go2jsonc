@@ -1,4 +1,4 @@
-package main
+package distiller
 
 import (
 	"github.com/marco-sacchi/go2jsonc/testdata/multipkg/network"
@@ -10,7 +10,7 @@ import (
 )
 
 func TestStructInfo(t *testing.T) {
-	testStructInfo(t, "./testdata", []*testutils.StructInfo{
+	testStructInfo(t, "../testdata", []*testutils.StructInfo{
 		// testdata/embedding.go
 		{
 			Package:     "github.com/marco-sacchi/go2jsonc/testdata",
@@ -61,7 +61,7 @@ func TestStructInfo(t *testing.T) {
 }
 
 func TestStructInfoMultiPackage(t *testing.T) {
-	testStructInfo(t, "./testdata/multipkg", []*testutils.StructInfo{
+	testStructInfo(t, "../testdata/multipkg", []*testutils.StructInfo{
 		// testdata/multipkg/multi_package.go
 		{
 			Package:     "github.com/marco-sacchi/go2jsonc/testdata/multipkg",
@@ -74,7 +74,7 @@ func TestStructInfoMultiPackage(t *testing.T) {
 }
 
 func TestStructInfoDefaults(t *testing.T) {
-	testStructInfoDefaults(t, "./testdata", "Simple", map[string]interface{}{
+	testStructInfoDefaults(t, "../testdata", "Simple", map[string]interface{}{
 		"Name":       constant.MakeString("John"),
 		"Surname":    constant.MakeString("Doe"),
 		"Age":        constant.MakeInt64(30),
@@ -88,7 +88,7 @@ func TestStructInfoDefaults(t *testing.T) {
 }
 
 func TestStructInfoDefaultsMultiPackage(t *testing.T) {
-	testStructInfoDefaults(t, "./testdata/multipkg", "MultiPackage", map[string]interface{}{
+	testStructInfoDefaults(t, "../testdata/multipkg", "MultiPackage", map[string]interface{}{
 		"NetStatus": map[string]interface{}{
 			"Connected": constant.MakeBool(true),
 			"State":     constant.MakeInt64(int64(network.StateDisconnected)),

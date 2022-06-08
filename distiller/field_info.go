@@ -1,4 +1,4 @@
-package main
+package distiller
 
 import (
 	"fmt"
@@ -72,7 +72,7 @@ func (f *FieldInfo) FormatDoc(indent string) string {
 	doc := f.Doc
 
 	// Check if the type is used to define typed constants.
-	consts := lookupTypedConsts(f.Type.String())
+	consts := LookupTypedConsts(f.Type.String())
 	if consts != nil {
 		// Display allowed values for defined constants below the field documentation.
 		doc += "Allowed values:\n"

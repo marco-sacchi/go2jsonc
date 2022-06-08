@@ -1,4 +1,4 @@
-package main
+package distiller
 
 import (
 	"github.com/marco-sacchi/go2jsonc/testutils"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestConstInfo(t *testing.T) {
-	pkgs := testutils.LoadPackage(t, "./testdata/consts.go")
+	pkgs := testutils.LoadPackage(t, "../testdata/consts.go")
 
 	var consts []*ConstInfo
 
