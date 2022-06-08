@@ -127,10 +127,10 @@ Rendered output:
 
 ## Installation
 
-From the repository root directory run:
+To install the standalone program / generator, run the following:
 
 ```shell
-go install ./cmd/go2jsonc
+go install github.com/marco-sacchi/go2jsonc/cmd/go2jsonc@latest
 ```
 
 ## Running as a standalone program
