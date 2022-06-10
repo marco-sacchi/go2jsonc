@@ -1,6 +1,9 @@
 package testdata
 
-//go:generate go2jsonc -type=Embedding -out=embedding.jsonc
+//go:generate go2jsonc -type Embedding -out embedding.jsonc
+//go:generate go2jsonc -type Embedding -doc-types NotStructFields -out embedding_not_struct.jsonc
+//go:generate go2jsonc -type Embedding -doc-types NotArrayFields -out embedding_not_array.jsonc
+//go:generate go2jsonc -type Embedding -doc-types NotMapFields -out embedding_not_map.jsonc
 
 // Embedded test struct.
 type Embedded struct {

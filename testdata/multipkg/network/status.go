@@ -4,17 +4,18 @@ type ConnState int
 
 const (
 	// StateDisconnected signals the Disconnected state.
-	StateDisconnected ConnState = iota // StateDisconnected comment.
-	StateConnecting                    // StateConnecting comment.
+	StateDisconnected ConnState = iota
+	// StateConnecting signals the connection-pending state.
+	StateConnecting
 	// StateConnected signals the Connected state.
-	StateConnected // StateConnected comment.
+	StateConnected
 )
 
 const (
 	// StateFailed signals the Failed state.
-	StateFailed ConnState = iota + 5 // StateFailed comment.
+	StateFailed ConnState = iota + 5
 	// StateReconnecting signals the Reconnecting state.
-	StateReconnecting // StateReconnecting comment.
+	StateReconnecting
 )
 
 // Status reports connection status.

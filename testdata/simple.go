@@ -1,6 +1,9 @@
 package testdata
 
-//go:generate go2jsonc -type=Simple -out=simple.jsonc
+//go:generate go2jsonc -type Simple -out simple.jsonc
+//go:generate go2jsonc -type Simple -doc-types NotStructFields -out simple_not_struct.jsonc
+//go:generate go2jsonc -type Simple -doc-types NotArrayFields -out simple_not_array.jsonc
+//go:generate go2jsonc -type Simple -doc-types NotMapFields -out simple_not_map.jsonc
 
 // Simple defines a simple user.
 type Simple struct {
@@ -13,6 +16,8 @@ type Simple struct {
 	StarsCount int `json:"stars_count"` // Number of stars achieved.
 
 	Addresses []string // Addresses comment.
+
+	Tags map[string]string // User tags.
 }
 
 func SimpleDefaults() *Simple {
@@ -25,6 +30,11 @@ func SimpleDefaults() *Simple {
 			"Address 1",
 			"Address 2",
 			"Address 3",
+		},
+		Tags: map[string]string{
+			"Key1": "Value1",
+			"Key2": "Value2",
+			"Key3": "Value3",
 		},
 	}
 }

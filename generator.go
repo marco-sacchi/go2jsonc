@@ -5,14 +5,28 @@ package go2jsonc
 import (
 	"fmt"
 	"github.com/marco-sacchi/go2jsonc/distiller"
+	"github.com/marco-sacchi/go2jsonc/ordered"
 	"go/constant"
 	"go/types"
 	"log"
 	"strings"
 )
 
-// Generate generates JSONC indented code.
-func Generate(dir, typeName string) (string, error) {
+// DocTypesMode defines rendering modes for field types in JSONC comments.
+type DocTypesMode int
+
+const (
+	NotStructFields DocTypesMode = 1 << iota // Don't show type on struct fields.
+	NotArrayFields                           // Don't show type on array or slice fields.
+	NotMapFields                             // Don't show type on map fields.
+	AllFields       DocTypesMode = 0         // Show types on all fields (default).
+)
+
+var docTypesMode = AllFields
+
+// Generate generates JSONC indented code for given package dir and type name.
+// mode controls the rendering of field types in JSONC comments.
+func Generate(dir, typeName string, mode DocTypesMode) (string, error) {
 	pkgInfo, err := distiller.NewPackageInfo(dir, typeName)
 	if err != nil {
 		return "", err
@@ -22,6 +36,8 @@ func Generate(dir, typeName string) (string, error) {
 	if s == nil {
 		return "", fmt.Errorf("cannot find struct %s in package %s", typeName, pkgInfo.Package.Name)
 	}
+
+	docTypesMode = mode
 
 	var code string
 	code, err = renderStruct(s, s.Defaults, "", false, nil)
@@ -81,60 +97,53 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 
 		consts := distiller.LookupTypedConsts(field.Type.String())
 
+		renderType := true
+
+		// No default defined for this field.
 		if !ok {
 			if consts != nil {
 				value = consts[0].Value
 			} else {
 				value = typeZero(field)
 			}
-		}
-
-		if _, ok = field.Type.(*types.Basic); ok || consts != nil {
-			if field.IsArray {
-				arrayIndent := indent + "\t"
-				array := "[\n"
-				for _, item := range value.([]interface{}) {
-					array += arrayIndent + fmt.Sprintf("%v", item) + ",\n"
-				}
-				value = strings.TrimRight(array, ",\n") + "\n" + indent + "]"
-				if value == "[\n"+indent+"]" {
-					value = "[]"
-				}
-			}
 		} else {
-			subInfo := distiller.LookupStruct(field.Type.String())
-			if subInfo == nil {
-				return "", fmt.Errorf("cannot lookup structure %s", field.Type.String())
-			}
-
 			var err error
-			if field.IsArray {
-				arrayIndent := indent + "\t"
-				array := "[\n"
-				var itemString string
-				for _, item := range value.([]interface{}) {
-					itemString, err = renderStruct(subInfo, item, arrayIndent, field.IsEmbedded, shadowing[i:])
+			switch field.Layout {
+			case distiller.LayoutSingle:
+				if _, ok = field.Type.(*types.Named); ok && consts == nil {
+					subInfo := distiller.LookupStruct(field.Type.String())
+					if subInfo == nil {
+						return "", fmt.Errorf("cannot lookup structure %s", field.Type.String())
+					}
+
+					renderType = (docTypesMode & NotStructFields) == 0
+
+					value, err = renderStruct(subInfo, value, indent, field.IsEmbedded, shadowing[i:])
 					if err != nil {
 						return "", err
 					}
-					array += arrayIndent + itemString + ",\n"
 				}
-				value = strings.TrimRight(array, ",\n") + "\n" + indent + "]"
-				if value == "[\n"+indent+"]" {
-					value = "[]"
-				}
-			} else {
-				value, err = renderStruct(subInfo, value, indent, field.IsEmbedded, shadowing[i:])
-				if err != nil {
-					return "", err
-				}
+
+				// No special handling required for basic types.
+
+			case distiller.LayoutArray:
+				renderType = (docTypesMode & NotArrayFields) == 0
+				value, err = renderArray(field, value.([]interface{}), indent)
+
+			case distiller.LayoutMap:
+				renderType = (docTypesMode & NotMapFields) == 0
+				value, err = renderMap(field, value.(*ordered.Map), indent)
+			}
+
+			if err != nil {
+				return "", err
 			}
 		}
 
 		if field.IsEmbedded {
 			builder.WriteString(fmt.Sprintf("%v", value))
 		} else {
-			builder.WriteString(field.FormatDoc(indent))
+			builder.WriteString(field.FormatDoc(indent, renderType))
 			builder.WriteString(fmt.Sprintf("%s\"%s\": %v", indent, name, value))
 		}
 
@@ -150,6 +159,76 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 	}
 
 	return builder.String(), nil
+}
+
+// renderArray renders slice or array fields.
+func renderArray(field *distiller.FieldInfo, value []interface{}, indent string) (string, error) {
+	if len(value) == 0 {
+		return "[]", nil
+	}
+
+	eltsIdent := indent + "\t"
+	code := "[\n"
+	for _, elt := range value {
+		literal, err := renderElement(field.EltType, elt, eltsIdent)
+		if err != nil {
+			return "", err
+		}
+
+		code += eltsIdent + literal + ",\n"
+	}
+	code = strings.TrimRight(code, ",\n") + "\n" + indent + "]"
+
+	return code, nil
+}
+
+// renderMap renders map fields.
+func renderMap(field *distiller.FieldInfo, value *ordered.Map, indent string) (string, error) {
+	if field.IsEmbedded == true {
+		return "", fmt.Errorf("field of slice or map type cannot be embedded")
+	}
+
+	if value.Len() == 0 {
+		return "{}", nil
+	}
+
+	eltsIndent := indent + "\t"
+	code := "{\n"
+
+	var err error
+	value.Iterate(func(key string, elt interface{}) bool {
+		var literal string
+		literal, err = renderElement(field.EltType, elt, eltsIndent)
+		if err != nil {
+			return false
+		}
+
+		code += eltsIndent + fmt.Sprintf("%s: %s", key, literal) + ",\n"
+		return true
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	code = strings.TrimRight(code, ",\n") + "\n" + indent + "}"
+
+	return code, nil
+}
+
+// renderElement renders an element value of a slice, array or map.
+func renderElement(itemType types.Type, item interface{}, indent string) (string, error) {
+	_, ok := itemType.(*types.Basic)
+	if ok || distiller.LookupTypedConsts(itemType.String()) != nil {
+		return fmt.Sprintf("%v", item), nil
+	}
+
+	subInfo := distiller.LookupStruct(itemType.String())
+	if subInfo == nil {
+		return "", fmt.Errorf("cannot lookup structure %s", itemType.String())
+	}
+
+	return renderStruct(subInfo, item, indent, false, nil)
 }
 
 // lastIndexOf returns the last slice index of specified value.
@@ -168,15 +247,18 @@ func lastIndexOf(slice []string, value string) int {
 // typeZero return the default uninitialized value for specified field.
 func typeZero(field *distiller.FieldInfo) interface{} {
 	var value interface{}
-	if field.IsArray {
+	if field.Layout == distiller.LayoutArray {
 		value = make([]interface{}, 0)
+		return value
+	} else if field.Layout == distiller.LayoutMap {
+		value = make(map[interface{}]interface{}, 0)
 		return value
 	}
 
-	t := types.Default(field.Type)
-	switch t.(type) {
+	fieldType := types.Default(field.Type)
+	switch t := fieldType.(type) {
 	case *types.Basic:
-		switch t.(*types.Basic).Kind() {
+		switch t.Kind() {
 		case types.Bool:
 			value = *new(bool)
 		case types.Int:
@@ -212,7 +294,7 @@ func typeZero(field *distiller.FieldInfo) interface{} {
 		case types.String:
 			value = constant.MakeString("")
 		default:
-			log.Fatalf("Unhandled default value for type %v", t.String())
+			log.Fatalf("Unhandled default value for type %v", fieldType.String())
 		}
 	}
 

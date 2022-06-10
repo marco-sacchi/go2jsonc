@@ -2,6 +2,7 @@ package distiller
 
 import (
 	"fmt"
+	"github.com/marco-sacchi/go2jsonc/ordered"
 	"go/ast"
 	"golang.org/x/tools/go/packages"
 	"strings"
@@ -104,35 +105,56 @@ func (s *StructInfo) ParseDefaultsMethod() error {
 // fields names-values or an array of values.
 func (s *StructInfo) parseDefaultsMethodBody(lit *ast.CompositeLit) interface{} {
 	var values interface{}
-	if _, ok := lit.Type.(*ast.ArrayType); ok {
+	isOrdered := false
+	switch lit.Type.(type) {
+	case *ast.ArrayType:
 		values = make([]interface{}, 0)
-	} else {
+
+	case *ast.MapType:
+		// Uses an ordered map to ensure consistent and sorted output according
+		// to the order in which the default values are defined.
+		isOrdered = true
+		values = ordered.NewMap()
+
+	default:
 		values = make(map[string]interface{})
 	}
 
 	for _, elt := range lit.Elts {
-		switch elt.(type) {
+		switch el := elt.(type) {
 		case *ast.KeyValueExpr:
-			// Assert values to a map.
-			m := values.(map[string]interface{})
-			keyVal := elt.(*ast.KeyValueExpr)
-			key := fmt.Sprintf("%v", keyVal.Key)
+			// values is a key-value pair.
+			var key string
+			switch k := el.Key.(type) {
+			case *ast.Ident:
+				key = fmt.Sprintf("%s", k.Name)
 
-			switch keyVal.Value.(type) {
+			case *ast.BasicLit:
+				key = fmt.Sprintf("%s", k.Value)
+			}
+
+			var value interface{}
+			switch val := el.Value.(type) {
 			case *ast.CompositeLit:
-				m[key] = s.parseDefaultsMethodBody(keyVal.Value.(*ast.CompositeLit))
+				value = s.parseDefaultsMethodBody(val)
 
 			default:
-				m[key] = s.Package.TypesInfo.Types[keyVal.Value].Value
+				value = s.Package.TypesInfo.Types[val].Value
+			}
+
+			if isOrdered {
+				values.(*ordered.Map).Append(key, value)
+			} else {
+				values.(map[string]interface{})[key] = value
 			}
 
 		case *ast.CompositeLit:
-			// Values is an array of interfaces.
-			values = append(values.([]interface{}), s.parseDefaultsMethodBody(elt.(*ast.CompositeLit)))
+			// values is an array of interfaces.
+			values = append(values.([]interface{}), s.parseDefaultsMethodBody(el))
 
 		default:
-			// Values is an array of interfaces.
-			values = append(values.([]interface{}), s.Package.TypesInfo.Types[elt].Value)
+			// values is an array of interfaces.
+			values = append(values.([]interface{}), s.Package.TypesInfo.Types[el].Value)
 		}
 	}
 

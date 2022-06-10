@@ -1,16 +1,32 @@
 package distiller
 
 import (
+	"fmt"
+	"github.com/marco-sacchi/go2jsonc/ordered"
 	"github.com/marco-sacchi/go2jsonc/testdata/multipkg/network"
 	"github.com/marco-sacchi/go2jsonc/testutils"
 	"go/ast"
 	"go/constant"
 	"reflect"
+	"strings"
 	"testing"
 )
 
+type StructInfoMatch struct {
+	Package     string
+	Name        string
+	FieldsCount int
+	Doc         string
+	Defaults    map[string]interface{}
+}
+
+func (s *StructInfoMatch) String() string {
+	return fmt.Sprintf("Package: %s\nName: \"%s\"\nFieldCount: %v\nDoc: \"%v\"\nDefaults: %+v",
+		s.Package, s.Name, s.FieldsCount, strings.ReplaceAll(s.Doc, "\n", "\\n"), s.Defaults)
+}
+
 func TestStructInfo(t *testing.T) {
-	testStructInfo(t, "../testdata", []*testutils.StructInfo{
+	testStructInfo(t, "../testdata", []*StructInfoMatch{
 		// testdata/embedding.go
 		{
 			Package:     "github.com/marco-sacchi/go2jsonc/testdata",
@@ -54,14 +70,14 @@ func TestStructInfo(t *testing.T) {
 			Package:     "github.com/marco-sacchi/go2jsonc/testdata",
 			Name:        "Simple",
 			Doc:         "Simple defines a simple user.\n",
-			FieldsCount: 5,
+			FieldsCount: 6,
 			Defaults:    nil,
 		},
 	})
 }
 
 func TestStructInfoMultiPackage(t *testing.T) {
-	testStructInfo(t, "../testdata/multipkg", []*testutils.StructInfo{
+	testStructInfo(t, "../testdata/multipkg", []*StructInfoMatch{
 		// testdata/multipkg/multi_package.go
 		{
 			Package:     "github.com/marco-sacchi/go2jsonc/testdata/multipkg",
@@ -74,6 +90,11 @@ func TestStructInfoMultiPackage(t *testing.T) {
 }
 
 func TestStructInfoDefaults(t *testing.T) {
+	tags := ordered.NewMap()
+	tags.Append(constant.MakeString("Key1").String(), constant.MakeString("Value1"))
+	tags.Append(constant.MakeString("Key2").String(), constant.MakeString("Value2"))
+	tags.Append(constant.MakeString("Key3").String(), constant.MakeString("Value3"))
+
 	testStructInfoDefaults(t, "../testdata", "Simple", map[string]interface{}{
 		"Name":       constant.MakeString("John"),
 		"Surname":    constant.MakeString("Doe"),
@@ -84,6 +105,7 @@ func TestStructInfoDefaults(t *testing.T) {
 			constant.MakeString("Address 2"),
 			constant.MakeString("Address 3"),
 		},
+		"Tags": tags,
 	})
 }
 
@@ -100,7 +122,7 @@ func TestStructInfoDefaultsMultiPackage(t *testing.T) {
 	})
 }
 
-func testStructInfo(t *testing.T, pattern string, want []*testutils.StructInfo) {
+func testStructInfo(t *testing.T, pattern string, want []*StructInfoMatch) {
 	pkgs := testutils.LoadPackage(t, pattern)
 
 	var structs []*StructInfo

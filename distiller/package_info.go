@@ -38,7 +38,7 @@ func LookupStruct(name string) *StructInfo {
 // LookupTypedConsts searches loaded packages for declared constants of specified fully qualified named type.
 // It returns nil in case of no matches.
 func LookupTypedConsts(name string) []*ConstInfo {
-	var consts []*ConstInfo = nil
+	consts := []*ConstInfo(nil)
 	for _, pkg := range loadedPackages {
 		c, ok := pkg.TypedConsts[name]
 		if ok {
@@ -187,7 +187,7 @@ func (p *PackageInfo) readPackage(dir string) error {
 
 // readIdentConsts reads typed constants what uses ident type. Returns nil if no constants use the type.
 func (p *PackageInfo) readIdentConsts(astFile *ast.File, ident *ast.Ident) []*ConstInfo {
-	var consts []*ConstInfo = nil
+	consts := []*ConstInfo(nil)
 	for _, decl := range astFile.Decls {
 		genDecl, ok := decl.(*ast.GenDecl)
 		if !ok {

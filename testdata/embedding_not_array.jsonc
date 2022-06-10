@@ -1,0 +1,14 @@
+{
+	// int - Identifier documentation block.
+	"id": 1234,
+	// bool - Enabled comment line.
+	"Enabled": false,
+	// float32 - Position comment line.
+	"position": 1,
+	// float32 - Velocity documentation block.
+	"velocity": 2,
+	// float32
+	"accel": 0.23,
+	// string - Shadowing field.
+	"reserved": "Shadowing"
+}

@@ -15,7 +15,7 @@
 		"Address 2",
 		"Address 3"
 	],
-	// map[string]string - User tags.
+	// User tags.
 	"Tags": {
 		"Key1": "Value1",
 		"Key2": "Value2",

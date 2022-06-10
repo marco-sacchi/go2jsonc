@@ -3,17 +3,22 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/marco-sacchi/go2jsonc"
 	"log"
 	"os"
+	"strings"
 )
 
-const version = "0.2.0"
+const version = "0.3.0"
 
 func main() {
 	flag.Usage = usage
-	typeName := flag.String("type", "", "struct type name for which generate JSONC")
-	output := flag.String("out", "", "output JSONC filepath")
+	typeName := flag.String("type", "", "struct type name for which generate JSONC; mandatory")
+	docTypeMode := flag.String("doc-types", "",
+		"pipe-separated bits representing struct fields types for which do not\n"+
+			"render the type in JSONC comments; when omitted all types will be\nrendered for all fields")
+	output := flag.String("out", "", "output JSONC filepath; when omitted the code is written to stdout")
 
 	flag.Parse()
 
@@ -21,6 +26,29 @@ func main() {
 		println("Flag -type is mandatory.\n")
 		flag.Usage()
 		os.Exit(1)
+	}
+
+	docMode := go2jsonc.AllFields
+
+	if *docTypeMode != "" {
+		bits := strings.Split(*docTypeMode, "|")
+		for _, bit := range bits {
+			switch bit {
+			case "NotStructFields":
+				docMode |= go2jsonc.NotStructFields
+
+			case "NotArrayFields":
+				docMode |= go2jsonc.NotArrayFields
+
+			case "NotMapFields":
+				docMode |= go2jsonc.NotMapFields
+
+			default:
+				fmt.Printf("Invalid bit name %s for -doc-types flag.\n\n", bit)
+				flag.Usage()
+				os.Exit(1)
+			}
+		}
 	}
 
 	dirs := flag.Args()
@@ -39,7 +67,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	code, err := go2jsonc.Generate(dir, *typeName)
+	code, err := go2jsonc.Generate(dir, *typeName, docMode)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,13 +84,18 @@ func main() {
 }
 
 func usage() {
-	println("go2jsonc v" + version + " Copyright 2022 Marco Sacchi")
-	println()
+	println("go2jsonc v" + version + " Copyright 2022 Marco Sacchi\n")
+
 	println("Usage:")
-	println("  go2jsonc -type <type-name> [-out jsonc-filename] [package-dir]")
-	println()
-	println("When -out flag is omitted the code is written to stdout.")
-	println("When package-dir is omitted, the current working directory will be used.")
+	println("  go2jsonc -type <type-name> [-doc-types bits] [-out jsonc-filename] [package-dir]\n")
 
 	flag.PrintDefaults()
+
+	println("\npackage-dir: directory that contains the go file where specified type is")
+	println("defined; when omitted, current working directory will be used\n")
+
+	println("Allowed constants for -doc-types flag:")
+	println("  NotStructFields  Do not show type on struct fields;")
+	println("  NotArrayFields   Do not show type on array or slice fields;")
+	println("  NotMapFields     Do not show type on map fields.")
 }

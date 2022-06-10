@@ -3,7 +3,7 @@
 	"IP": "127.0.0.1",
 	// int - Remote port.
 	"Port": 12345,
-	// testdata.Protocol - Default protocol.
+	// Default protocol.
 	"default_proto": {
 		// string - Name describes the protocol name.
 		// Multiple line documentation test.

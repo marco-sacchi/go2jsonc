@@ -14,7 +14,7 @@
 		// int - Minor version.
 		"Minor": 0
 	},
-	// []testdata.Protocol - Optional supported protocols.
+	// Optional supported protocols.
 	"optional_protos": [
 		{
 			// string - Name describes the protocol name.

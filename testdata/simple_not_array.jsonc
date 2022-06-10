@@ -9,7 +9,7 @@
 	"age": 30,
 	// int - Number of stars achieved.
 	"stars_count": 5,
-	// []string - Addresses comment.
+	// Addresses comment.
 	"Addresses": [
 		"Address 1",
 		"Address 2",
