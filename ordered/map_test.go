@@ -28,6 +28,12 @@ func TestMap(t *testing.T) {
 		t.Fatalf("Wrong map length: got %d, want %d", m.Len(), len(items))
 	}
 
+	s := m.String()
+	wantString := "ordered.Map[0:a 1:b 2:c 3:d]"
+	if s != wantString {
+		t.Fatalf("Wrong map String result: got:\n%s\nwant:\n%s\n", s, wantString)
+	}
+
 	for _, item := range items {
 		if !m.Has(item.Key) {
 			t.Fatalf("Map key %s not found", item.Key)
@@ -40,6 +46,14 @@ func TestMap(t *testing.T) {
 		if i := m.indexOf(item.Key); i != item.Index {
 			t.Fatalf("Wrong map item index: got %d, want %d", i, item.Index)
 		}
+	}
+
+	if m.Has("invalid-key") {
+		t.Fatalf("Map key %s found, want not found.", "invalid-key")
+	}
+
+	if m.Value("invalid-key") != nil {
+		t.Fatalf("Map value for key %s not nil, want nil.", "invalid-key")
 	}
 
 	i := 0

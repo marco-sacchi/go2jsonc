@@ -20,5 +20,15 @@
 		"Key1": "Value1",
 		"Key2": "Value2",
 		"Key3": "Value3"
-	}
+	},
+	// testdata.ConstType - Type documentation block.
+	// Type of constant.
+	// Allowed values:
+	// ConstTypeA =   0  ConstTypeA doc block. ConstTypeA comment.
+	// ConstTypeB =   1  ConstTypeB comment.
+	// ConstTypeC =   2  ConstTypeC doc block. ConstTypeC comment.
+	// ConstTypeD =  32  ConstTypeD doc block.
+	// ConstTypeE =  64  ConstTypeE doc block. ConstTypeE comment.
+	// ConstTypeF = 128  ConstTypeF doc block. ConstTypeF comment.
+	"Type": 0
 }

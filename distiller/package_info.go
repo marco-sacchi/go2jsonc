@@ -3,10 +3,10 @@ package distiller
 import (
 	"fmt"
 	"go/ast"
+	"go/token"
 	"go/types"
 	"golang.org/x/tools/go/ast/astutil"
 	"golang.org/x/tools/go/packages"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -79,7 +79,12 @@ func NewPackageInfo(dir string, typeName string) (*PackageInfo, error) {
 
 // readPackage reads information for the package defined in the given directory and all imported packages.
 func (p *PackageInfo) readPackage(dir string) error {
-	if !isDirectory(dir) {
+	ok, err := isDirectory(dir)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
 		return fmt.Errorf("%v is not a directory", dir)
 	}
 
@@ -150,19 +155,15 @@ func (p *PackageInfo) readPackage(dir string) error {
 						continue
 					}
 
-					// Check if require package is loaded.
+					// Check if required package is loaded.
 					pkgPath := namedType.Obj().Pkg().Path()
 					_, ok = loadedPackages[pkgPath]
 					if pkgPath == p.Package.PkgPath || ok {
 						continue
 					}
 
-					// If not get package directory from first go file and load it.
+					// Load required package.
 					imported := p.Package.Imports[pkgPath]
-					if len(imported.GoFiles) == 0 {
-						return fmt.Errorf("package %v without files", imported.PkgPath)
-					}
-
 					if _, err = NewPackageInfo(filepath.Dir(imported.GoFiles[0]), ""); err != nil {
 						return err
 					}
@@ -190,7 +191,7 @@ func (p *PackageInfo) readIdentConsts(astFile *ast.File, ident *ast.Ident) []*Co
 	consts := []*ConstInfo(nil)
 	for _, decl := range astFile.Decls {
 		genDecl, ok := decl.(*ast.GenDecl)
-		if !ok {
+		if !ok || genDecl.Tok != token.CONST {
 			continue
 		}
 
@@ -217,10 +218,10 @@ func (p *PackageInfo) readIdentConsts(astFile *ast.File, ident *ast.Ident) []*Co
 }
 
 // isDirectory reports whether the named file is a directory.
-func isDirectory(name string) bool {
+func isDirectory(name string) (bool, error) {
 	info, err := os.Stat(name)
 	if err != nil {
-		log.Fatal(err)
+		return false, err
 	}
-	return info.IsDir()
+	return info.IsDir(), nil
 }

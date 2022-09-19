@@ -41,6 +41,16 @@ func TestPackageInfo(t *testing.T) {
 			t.Fatalf("Cannot lookup struct %s", name)
 		}
 	}
+
+	_, err = NewPackageInfo("../invalid-path", "")
+	if err == nil {
+		t.Fatal("Lookup for invalid package path, error expected, got nil.")
+	}
+
+	_, err = NewPackageInfo("../testdata/consts.go", "")
+	if err == nil {
+		t.Fatal("Non directory package path, error expected, got nil.")
+	}
 }
 
 func TestPackageInfoMultiPackage(t *testing.T) {
@@ -65,9 +75,27 @@ func TestPackageInfoMultiPackage(t *testing.T) {
 		}
 	}
 
+	if LookupTypedConsts("invalid-name") != nil {
+		t.Fatalf("Lookup of invalid typed constant not nil")
+	}
+
 	for _, name := range wantStructs {
 		if LookupStruct(name) == nil {
 			t.Fatalf("Cannot lookup struct %s", name)
 		}
+	}
+
+	if LookupStruct("invalid-name") != nil {
+		t.Fatalf("Lookup of invalid struct not nil")
+	}
+
+	_, err = NewPackageInfo("../testdata/multipkg", "MultiPackage")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = NewPackageInfo("../testdata/multipkg", "invalid-name")
+	if err == nil {
+		t.Fatalf("Lookup of invalid struct, error expected, got nil")
 	}
 }

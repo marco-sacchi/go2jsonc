@@ -18,6 +18,9 @@ type Simple struct {
 	Addresses []string // Addresses comment.
 
 	Tags map[string]string // User tags.
+
+	// Type documentation block.
+	Type ConstType // Type of constant.
 }
 
 func SimpleDefaults() *Simple {

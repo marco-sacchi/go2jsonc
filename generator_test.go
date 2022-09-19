@@ -57,4 +57,36 @@ func TestGenerator(t *testing.T) {
 				whitespacesReplacer.Replace(want))
 		}
 	}
+
+	_, err := Generate("./testdata/invalid-path", "", AllFields)
+	if err == nil {
+		t.Fatalf("Generating for invalid path: expected error, got nil.")
+	}
+
+	_, err = Generate("./testdata", "invalid-struct", AllFields)
+	if err == nil {
+		t.Fatalf("Generating for invalid struct: expected error, got nil.")
+	}
 }
+
+/* TODO: implement a test for typeZero function.
+func TestGenerator_typeZero(t *testing.T) {
+	tests := []struct {
+		info *distiller.FieldInfo
+		want interface{}
+	}{
+		{info: &distiller.FieldInfo{Type: nil, Layout: distiller.LayoutArray}, want: nil},
+		{info: &distiller.FieldInfo{Type: nil, Layout: distiller.LayoutMap}, want: nil},
+		{info: &distiller.FieldInfo{Type: types.Bool, Layout: distiller.LayoutSingle}, want: false},
+	}
+	&types.Basic{}
+
+	for _, test := range tests {
+		zero := typeZero(test.info)
+		if zero != test.want {
+			t.Fatalf("Zero value for ")
+		}
+
+	}
+}
+*/

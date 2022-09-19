@@ -70,7 +70,7 @@ func TestStructInfo(t *testing.T) {
 			Package:     "github.com/marco-sacchi/go2jsonc/testdata",
 			Name:        "Simple",
 			Doc:         "Simple defines a simple user.\n",
-			FieldsCount: 6,
+			FieldsCount: 7,
 			Defaults:    nil,
 		},
 	})

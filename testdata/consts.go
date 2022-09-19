@@ -18,3 +18,18 @@ const (
 	// ConstTypeF doc block.
 	ConstTypeF // ConstTypeF comment.
 )
+
+// ConstTypeEnum enumeration of const types.
+var ConstTypeEnum = [ConstTypeC + 1]ConstType{
+	ConstTypeA,
+	ConstTypeB,
+	ConstTypeC,
+}
+
+// ConstTypeABC lists A, B, C const types.
+var ConstTypeABC = []ConstType{ConstTypeA, ConstTypeB, ConstTypeC}
+
+// ConstTypeString is a constant of const types names.
+var ConstTypeString = [ConstTypeC + 1]string{
+	"ConstTypeA", "ConstTypeB", "ConstTypeC",
+}

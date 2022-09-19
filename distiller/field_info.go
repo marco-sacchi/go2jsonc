@@ -48,7 +48,7 @@ func NewFieldInfo(field *ast.Field, pkg *packages.Package) *FieldInfo {
 	f.Type = pkg.TypesInfo.Types[field.Type].Type
 	switch fieldType := field.Type.(type) {
 	case *ast.ArrayType:
-		// In case of array get the type of a single element.
+		// In case of array get the type of single element.
 		f.EltType = pkg.TypesInfo.Types[fieldType.Elt].Type
 		f.Layout = LayoutArray
 
@@ -77,8 +77,8 @@ func NewFieldInfo(field *ast.Field, pkg *packages.Package) *FieldInfo {
 }
 
 func (f *FieldInfo) String() string {
-	return fmt.Sprintf("Type: %s\nName: \"%s\"\nLayout: %v\nElement type: %s\nIsEmbedded: %v\nTags: %+v\nDoc: \"%v\"\n",
-		f.Type.String(), f.Name, f.Layout, f.EltType.String(),
+	return fmt.Sprintf("Type: %s\nName: \"%s\"\nLayout: %v\nElement type: %v\nIsEmbedded: %v\nTags: %+v\nDoc: \"%v\"\n",
+		f.Type.String(), f.Name, f.Layout, f.EltType,
 		f.IsEmbedded, f.Tags, strings.ReplaceAll(f.Doc, "\n", "\\n"))
 }
 

@@ -95,7 +95,7 @@ func usage() {
 	println("defined; when omitted, current working directory will be used\n")
 
 	println("Allowed constants for -doc-types flag:")
-	println("  NotStructFields  Do not show type on struct fields;")
-	println("  NotArrayFields   Do not show type on array or slice fields;")
-	println("  NotMapFields     Do not show type on map fields.")
+	println("  NotStructFields  Does not display type in fields of type struct;")
+	println("  NotArrayFields   Does not display type in fields of type array or slice;")
+	println("  NotMapFields     Does not display type in fields of type map.")
 }
