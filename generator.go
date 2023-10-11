@@ -66,6 +66,7 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 	}
 
 	comma := ""
+	block_spacing := false
 	for i, field := range info.Fields {
 		name := field.Name
 
@@ -143,11 +144,25 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 		if field.IsEmbedded {
 			builder.WriteString(fmt.Sprintf("%v", value))
 		} else {
-			builder.WriteString(field.FormatDoc(indent, renderType))
+			doc := field.FormatDoc(indent, renderType)
+			if doc != "" {
+				// Adds a blank line when the comment block is present.
+				if !block_spacing && (comma != "") {
+					builder.WriteString("\n")
+				}
+				block_spacing = true
+			} else {
+				block_spacing = false
+			}
+
+			builder.WriteString(doc)
 			builder.WriteString(fmt.Sprintf("%s\"%s\": %v", indent, name, value))
 		}
 
 		comma = ",\n"
+		if block_spacing {
+			comma += "\n"
+		}
 	}
 
 	if !embedded {
