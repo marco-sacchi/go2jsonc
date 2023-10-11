@@ -19,6 +19,11 @@ func TestGenerator(t *testing.T) {
 		{"./testdata", "Simple", "./testdata/simple.jsonc", AllFields},
 		{"./testdata/multipkg", "MultiPackage", "./testdata/multipkg/multi_package.jsonc", AllFields},
 
+		{"./testdata", "Embedding", "./testdata/embedding_not_fields.jsonc", NotFields},
+		{"./testdata", "Nesting", "./testdata/nesting_not_fields.jsonc", NotFields},
+		{"./testdata", "Simple", "./testdata/simple_not_fields.jsonc", NotFields},
+		{"./testdata/multipkg", "MultiPackage", "./testdata/multipkg/multi_package_not_fields.jsonc", NotFields},
+
 		{"./testdata", "Embedding", "./testdata/embedding_not_struct.jsonc", NotStructFields},
 		{"./testdata", "Nesting", "./testdata/nesting_not_struct.jsonc", NotStructFields},
 		{"./testdata", "Simple", "./testdata/simple_not_struct.jsonc", NotStructFields},

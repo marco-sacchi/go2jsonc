@@ -1,8 +1,11 @@
 {
+
 	// network.Status - Network status.
 	"NetStatus": {
+
 		// bool - Connected flag comment.
 		"Connected": true,
+
 		// network.ConnState - Connection state comment.
 		// Allowed values:
 		// StateDisconnected = 0  StateDisconnected signals the Disconnected state.
@@ -12,9 +15,11 @@
 		// StateReconnecting = 6  StateReconnecting signals the Reconnecting state.
 		"State": 0
 	},
+
 	// int - PacketLoss documentation block.
 	// Packet loss comment.
 	"packet_loss": 64,
+
 	// int - Round-trip time in milliseconds.
 	"round_trip_time": 123
 }

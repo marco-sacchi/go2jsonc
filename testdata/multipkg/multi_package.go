@@ -6,6 +6,7 @@ import (
 )
 
 //go:generate go2jsonc -type MultiPackage -out multi_package.jsonc
+//go:generate go2jsonc -type MultiPackage -doc-types NotFields -out multi_package_not_fields.jsonc
 //go:generate go2jsonc -type MultiPackage -doc-types NotStructFields -out multi_package_not_struct.jsonc
 //go:generate go2jsonc -type MultiPackage -doc-types NotArrayFields -out multi_package_not_array.jsonc
 //go:generate go2jsonc -type MultiPackage -doc-types NotMapFields -out multi_package_not_map.jsonc

@@ -4,13 +4,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/marco-sacchi/go2jsonc"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/marco-sacchi/go2jsonc"
 )
 
-const version = "0.3.0"
+const version = "0.3.2"
 
 func main() {
 	flag.Usage = usage
@@ -33,20 +34,24 @@ func main() {
 	if *docTypeMode != "" {
 		bits := strings.Split(*docTypeMode, "|")
 		for _, bit := range bits {
-			switch bit {
-			case "NotStructFields":
-				docMode |= go2jsonc.NotStructFields
+			if bit == "NotFields" {
+				docMode = go2jsonc.NotFields
+			} else {
+				switch bit {
+				case "NotStructFields":
+					docMode |= go2jsonc.NotStructFields
 
-			case "NotArrayFields":
-				docMode |= go2jsonc.NotArrayFields
+				case "NotArrayFields":
+					docMode |= go2jsonc.NotArrayFields
 
-			case "NotMapFields":
-				docMode |= go2jsonc.NotMapFields
+				case "NotMapFields":
+					docMode |= go2jsonc.NotMapFields
 
-			default:
-				fmt.Printf("Invalid bit name %s for -doc-types flag.\n\n", bit)
-				flag.Usage()
-				os.Exit(1)
+				default:
+					fmt.Printf("Invalid bit name %s for -doc-types flag.\n\n", bit)
+					flag.Usage()
+					os.Exit(1)
+				}
 			}
 		}
 	}
@@ -95,6 +100,7 @@ func usage() {
 	println("defined; when omitted, current working directory will be used\n")
 
 	println("Allowed constants for -doc-types flag:")
+	println("  NotFields        Does not display type in all fields;")
 	println("  NotStructFields  Does not display type in fields of type struct;")
 	println("  NotArrayFields   Does not display type in fields of type array or slice;")
 	println("  NotMapFields     Does not display type in fields of type map.")
