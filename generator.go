@@ -143,7 +143,11 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 		if field.IsEmbedded {
 			builder.WriteString(fmt.Sprintf("%v", value))
 		} else {
-			builder.WriteString(field.FormatDoc(indent, renderType))
+			doc := field.FormatDoc(indent, renderType)
+			if doc != "" { // Add blank line before comments.
+				builder.WriteString("\n")
+			}
+			builder.WriteString(doc)
 			builder.WriteString(fmt.Sprintf("%s\"%s\": %v", indent, name, value))
 		}
 
