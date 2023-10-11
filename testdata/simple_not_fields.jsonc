@@ -1,19 +1,19 @@
 {
-	// string - User name documentation block.
+	// User name documentation block.
 	// User name comment.
 	"Name": "John",
 
-	// string - User surname comment.
+	// User surname comment.
 	"Surname": "Doe",
 
-	// int - Age documentation block.
+	// Age documentation block.
 	// User age.
 	"age": 30,
 
-	// int - Number of stars achieved.
+	// Number of stars achieved.
 	"stars_count": 5,
 
-	// []string - Addresses comment.
+	// Addresses comment.
 	"Addresses": [
 		"Address 1",
 		"Address 2",
@@ -27,7 +27,7 @@
 		"Key3": "Value3"
 	},
 
-	// testdata.ConstType - Type documentation block.
+	// Type documentation block.
 	// Type of constant.
 	// Allowed values:
 	// ConstTypeA =   0  ConstTypeA doc block. ConstTypeA comment.

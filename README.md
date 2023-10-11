@@ -141,6 +141,7 @@ When run as a standalone program, the syntax is as follows:
 ```shell
 go2jsonc -type <type-name> [-doc-types bits] [-out jsonc-filename] [package-dir]
 ```
+
 - `-doc-types` - `string`: pipe-separated bits representing struct fields types
   for which do not render the type in JSONC comments; when omitted all types
   will be rendered for all fields
@@ -151,10 +152,11 @@ go2jsonc -type <type-name> [-doc-types bits] [-out jsonc-filename] [package-dir]
   defined; when omitted, current working directory will be used
 
 Allowed constants for `-doc-types` flag:
+
 - `NotStructFields`: do not show type on struct fields
 - `NotArrayFields`: do not show type on array or slice fields
-- `NotMapFields`: do not show type on map fields.
-
+- `NotMapFields`: do not show type on map fields
+- `NotFields`: do not show type on all fields (override all previous bits).
 
 ## Running as a generator
 
@@ -171,6 +173,7 @@ in which the comment is present will be used.
 ## Importing packages
 
 go2jsonc contains two packages:
+
 - go2jsonc
 - go2jsonc/distiller
 
@@ -188,6 +191,7 @@ render other formats.
 ## Known limitations
 
 go2jsonc supports maps, but under the following limitations:
+
 - the keys must be strings;
 - the values can be of any type, except the `interface{}` type, this means
   that all the values of the map must be of the same type;

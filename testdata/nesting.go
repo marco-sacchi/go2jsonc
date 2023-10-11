@@ -1,6 +1,7 @@
 package testdata
 
 //go:generate go2jsonc -type Nesting -out nesting.jsonc
+//go:generate go2jsonc -type Nesting -doc-types NotFields -out nesting_not_fields.jsonc
 //go:generate go2jsonc -type Nesting -doc-types NotStructFields -out nesting_not_struct.jsonc
 //go:generate go2jsonc -type Nesting -doc-types NotArrayFields -out nesting_not_array.jsonc
 //go:generate go2jsonc -type Nesting -doc-types NotMapFields -out nesting_not_map.jsonc

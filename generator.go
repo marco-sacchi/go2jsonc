@@ -4,22 +4,24 @@ package go2jsonc
 
 import (
 	"fmt"
-	"github.com/marco-sacchi/go2jsonc/distiller"
-	"github.com/marco-sacchi/go2jsonc/ordered"
 	"go/constant"
 	"go/types"
 	"log"
 	"strings"
+
+	"github.com/marco-sacchi/go2jsonc/distiller"
+	"github.com/marco-sacchi/go2jsonc/ordered"
 )
 
 // DocTypesMode defines rendering modes for field types in JSONC comments.
 type DocTypesMode int
 
 const (
+	AllFields       DocTypesMode = 0         // Show types on all fields (default).
+	NotFields       DocTypesMode = 0xFF      // Don't show type on all fields.
 	NotStructFields DocTypesMode = 1 << iota // Don't show type on struct fields.
 	NotArrayFields                           // Don't show type on array or slice fields.
 	NotMapFields                             // Don't show type on map fields.
-	AllFields       DocTypesMode = 0         // Show types on all fields (default).
 )
 
 var docTypesMode = AllFields
@@ -98,7 +100,7 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 
 		consts := distiller.LookupTypedConsts(field.Type.String())
 
-		renderType := true
+		renderType := (docTypesMode != NotFields)
 
 		// No default defined for this field.
 		if !ok {
@@ -117,7 +119,7 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 						return "", fmt.Errorf("cannot lookup structure %s", field.Type.String())
 					}
 
-					renderType = (docTypesMode & NotStructFields) == 0
+					renderType = renderType && ((docTypesMode & NotStructFields) == 0)
 
 					value, err = renderStruct(subInfo, value, indent, field.IsEmbedded, shadowing[i:])
 					if err != nil {
@@ -128,11 +130,11 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 				// No special handling required for basic types.
 
 			case distiller.LayoutArray:
-				renderType = (docTypesMode & NotArrayFields) == 0
+				renderType = renderType && ((docTypesMode & NotArrayFields) == 0)
 				value, err = renderArray(field, value.([]interface{}), indent)
 
 			case distiller.LayoutMap:
-				renderType = (docTypesMode & NotMapFields) == 0
+				renderType = renderType && ((docTypesMode & NotMapFields) == 0)
 				value, err = renderMap(field, value.(*ordered.Map), indent)
 			}
 

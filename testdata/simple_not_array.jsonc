@@ -2,25 +2,31 @@
 	// string - User name documentation block.
 	// User name comment.
 	"Name": "John",
+
 	// string - User surname comment.
 	"Surname": "Doe",
+
 	// int - Age documentation block.
 	// User age.
 	"age": 30,
+
 	// int - Number of stars achieved.
 	"stars_count": 5,
+
 	// Addresses comment.
 	"Addresses": [
 		"Address 1",
 		"Address 2",
 		"Address 3"
 	],
+
 	// map[string]string - User tags.
 	"Tags": {
 		"Key1": "Value1",
 		"Key2": "Value2",
 		"Key3": "Value3"
 	},
+
 	// testdata.ConstType - Type documentation block.
 	// Type of constant.
 	// Allowed values:

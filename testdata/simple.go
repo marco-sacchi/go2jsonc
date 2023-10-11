@@ -1,6 +1,7 @@
 package testdata
 
 //go:generate go2jsonc -type Simple -out simple.jsonc
+//go:generate go2jsonc -type Simple -doc-types NotFields -out simple_not_fields.jsonc
 //go:generate go2jsonc -type Simple -doc-types NotStructFields -out simple_not_struct.jsonc
 //go:generate go2jsonc -type Simple -doc-types NotArrayFields -out simple_not_array.jsonc
 //go:generate go2jsonc -type Simple -doc-types NotMapFields -out simple_not_map.jsonc
