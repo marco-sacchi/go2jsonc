@@ -1,0 +1,21 @@
+{
+	// testdata.EmptySubType
+	"Test1": {
+		// string
+		"A": "",
+
+		// int
+		"B": 0
+	},
+
+	// []testdata.EmptySubType
+	"Test2": [
+		{
+			// string
+			"A": "",
+
+			// int
+			"B": 0
+		}
+	]
+}

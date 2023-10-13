@@ -50,6 +50,21 @@ func TestStructInfo(t *testing.T) {
 			FieldsCount: 0,
 			Defaults:    nil,
 		},
+		// testdata/empty_defs.go
+		{
+			Package:     "github.com/marco-sacchi/go2jsonc/testdata",
+			Name:        "EmptyDefs",
+			Doc:         "EmptyDefs define a struct with non-initialized fields.\n",
+			FieldsCount: 2,
+			Defaults:    nil,
+		},
+		{
+			Package:     "github.com/marco-sacchi/go2jsonc/testdata",
+			Name:        "EmptySubType",
+			Doc:         "EmptySubType define a struct with non-initialized fields.\n",
+			FieldsCount: 2,
+			Defaults:    nil,
+		},
 		// testdata/nesting.go
 		{
 			Package:     "github.com/marco-sacchi/go2jsonc/testdata",

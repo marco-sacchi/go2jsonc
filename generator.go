@@ -68,7 +68,7 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 	}
 
 	comma := ""
-	block_spacing := false
+	blockSpacing := false
 	for i, field := range info.Fields {
 		name := field.Name
 
@@ -100,10 +100,11 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 
 		consts := distiller.LookupTypedConsts(field.Type.String())
 
-		renderType := (docTypesMode != NotFields)
+		renderType := docTypesMode != NotFields
 
-		// No default defined for this field.
-		if !ok {
+		// No default defined for this field, if named (struct) or array will be rendered below.
+		_, isNamed := field.Type.(*types.Named)
+		if !ok && field.Layout == distiller.LayoutSingle && (consts != nil || !isNamed) {
 			if consts != nil {
 				value = consts[0].Value
 			} else {
@@ -113,7 +114,7 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 			var err error
 			switch field.Layout {
 			case distiller.LayoutSingle:
-				if _, ok = field.Type.(*types.Named); ok && consts == nil {
+				if isNamed && consts == nil {
 					subInfo := distiller.LookupStruct(field.Type.String())
 					if subInfo == nil {
 						return "", fmt.Errorf("cannot lookup structure %s", field.Type.String())
@@ -131,7 +132,12 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 
 			case distiller.LayoutArray:
 				renderType = renderType && ((docTypesMode & NotArrayFields) == 0)
-				value, err = renderArray(field, value.([]interface{}), indent)
+				if value == nil {
+					// Add an example item in case of nil array.
+					value, err = renderArray(field, []interface{}{nil}, indent)
+				} else {
+					value, err = renderArray(field, value.([]interface{}), indent)
+				}
 
 			case distiller.LayoutMap:
 				renderType = renderType && ((docTypesMode & NotMapFields) == 0)
@@ -149,12 +155,12 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 			doc := field.FormatDoc(indent, renderType)
 			if doc != "" {
 				// Adds a blank line when the comment block is present.
-				if !block_spacing && (comma != "") {
+				if !blockSpacing && (comma != "") {
 					builder.WriteString("\n")
 				}
-				block_spacing = true
+				blockSpacing = true
 			} else {
-				block_spacing = false
+				blockSpacing = false
 			}
 
 			builder.WriteString(doc)
@@ -162,7 +168,7 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 		}
 
 		comma = ",\n"
-		if block_spacing {
+		if blockSpacing {
 			comma += "\n"
 		}
 	}
@@ -268,7 +274,7 @@ func typeZero(field *distiller.FieldInfo) interface{} {
 		value = make([]interface{}, 0)
 		return value
 	} else if field.Layout == distiller.LayoutMap {
-		value = make(map[interface{}]interface{}, 0)
+		value = make(map[interface{}]interface{})
 		return value
 	}
 

@@ -16,6 +16,8 @@ func TestPackageInfo(t *testing.T) {
 		"github.com/marco-sacchi/go2jsonc/testdata.Embedded",
 		"github.com/marco-sacchi/go2jsonc/testdata.Embedding",
 		"github.com/marco-sacchi/go2jsonc/testdata.Empty",
+		"github.com/marco-sacchi/go2jsonc/testdata.EmptyDefs",
+		"github.com/marco-sacchi/go2jsonc/testdata.EmptySubType",
 		"github.com/marco-sacchi/go2jsonc/testdata.Protocol",
 		"github.com/marco-sacchi/go2jsonc/testdata.Nesting",
 		"github.com/marco-sacchi/go2jsonc/testdata.Simple",
