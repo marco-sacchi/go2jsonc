@@ -1,4 +1,4 @@
-// Package ordered implements an simple ordered map to ensure that the insertion order
+// Package ordered implements a simple ordered map to ensure that the insertion order
 // in the elements of a map is maintained.
 package ordered
 
@@ -56,7 +56,7 @@ func (m *Map) Has(key string) bool {
 	return false
 }
 
-// Value returns the value for given key, nil if key don't exists.
+// Value returns the value for given key, nil if key don't exist.
 func (m *Map) Value(key string) interface{} {
 	for _, item := range m.items {
 		if item.key == key {
@@ -86,7 +86,7 @@ func (m *Map) Iterate(iterator mapIterator) {
 	}
 }
 
-// indexOf return the zero-based index of given key, -1 if key do not exists.
+// indexOf return the zero-based index of given key, -1 if key do not exist.
 func (m *Map) indexOf(key string) int {
 	for i, item := range m.items {
 		if item.key == key {

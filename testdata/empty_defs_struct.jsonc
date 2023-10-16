@@ -1,0 +1,20 @@
+{
+	"Test1": {
+		// string - Field A
+		"A": "",
+
+		// int - Field B
+		"B": 0
+	},
+
+	// []testdata.EmptySubType
+	"Test2": [
+		{
+			// string - Field A
+			"A": "",
+
+			// int - Field B
+			"B": 0
+		}
+	]
+}

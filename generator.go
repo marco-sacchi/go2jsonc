@@ -4,22 +4,24 @@ package go2jsonc
 
 import (
 	"fmt"
-	"github.com/marco-sacchi/go2jsonc/distiller"
-	"github.com/marco-sacchi/go2jsonc/ordered"
 	"go/constant"
 	"go/types"
 	"log"
 	"strings"
+
+	"github.com/marco-sacchi/go2jsonc/distiller"
+	"github.com/marco-sacchi/go2jsonc/ordered"
 )
 
 // DocTypesMode defines rendering modes for field types in JSONC comments.
 type DocTypesMode int
 
 const (
+	AllFields       DocTypesMode = 0         // Show types on all fields (default).
+	NotFields       DocTypesMode = 0xFF      // Don't show type on all fields.
 	NotStructFields DocTypesMode = 1 << iota // Don't show type on struct fields.
 	NotArrayFields                           // Don't show type on array or slice fields.
 	NotMapFields                             // Don't show type on map fields.
-	AllFields       DocTypesMode = 0         // Show types on all fields (default).
 )
 
 var docTypesMode = AllFields
@@ -66,6 +68,7 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 	}
 
 	comma := ""
+	blockSpacing := false
 	for i, field := range info.Fields {
 		name := field.Name
 
@@ -97,10 +100,11 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 
 		consts := distiller.LookupTypedConsts(field.Type.String())
 
-		renderType := true
+		renderType := docTypesMode != NotFields
 
-		// No default defined for this field.
-		if !ok {
+		// No default defined for this field, if named (struct) or array will be rendered below.
+		_, isNamed := field.Type.(*types.Named)
+		if !ok && field.Layout == distiller.LayoutSingle && (consts != nil || !isNamed) {
 			if consts != nil {
 				value = consts[0].Value
 			} else {
@@ -110,13 +114,13 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 			var err error
 			switch field.Layout {
 			case distiller.LayoutSingle:
-				if _, ok = field.Type.(*types.Named); ok && consts == nil {
+				if isNamed && consts == nil {
 					subInfo := distiller.LookupStruct(field.Type.String())
 					if subInfo == nil {
 						return "", fmt.Errorf("cannot lookup structure %s", field.Type.String())
 					}
 
-					renderType = (docTypesMode & NotStructFields) == 0
+					renderType = renderType && ((docTypesMode & NotStructFields) == 0)
 
 					value, err = renderStruct(subInfo, value, indent, field.IsEmbedded, shadowing[i:])
 					if err != nil {
@@ -127,11 +131,16 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 				// No special handling required for basic types.
 
 			case distiller.LayoutArray:
-				renderType = (docTypesMode & NotArrayFields) == 0
-				value, err = renderArray(field, value.([]interface{}), indent)
+				renderType = renderType && ((docTypesMode & NotArrayFields) == 0)
+				if value == nil {
+					// Add an example item in case of nil array.
+					value, err = renderArray(field, []interface{}{nil}, indent)
+				} else {
+					value, err = renderArray(field, value.([]interface{}), indent)
+				}
 
 			case distiller.LayoutMap:
-				renderType = (docTypesMode & NotMapFields) == 0
+				renderType = renderType && ((docTypesMode & NotMapFields) == 0)
 				value, err = renderMap(field, value.(*ordered.Map), indent)
 			}
 
@@ -143,11 +152,25 @@ func renderStruct(info *distiller.StructInfo, defaults interface{}, indent strin
 		if field.IsEmbedded {
 			builder.WriteString(fmt.Sprintf("%v", value))
 		} else {
-			builder.WriteString(field.FormatDoc(indent, renderType))
+			doc := field.FormatDoc(indent, renderType)
+			if doc != "" {
+				// Adds a blank line when the comment block is present.
+				if !blockSpacing && (comma != "") {
+					builder.WriteString("\n")
+				}
+				blockSpacing = true
+			} else {
+				blockSpacing = false
+			}
+
+			builder.WriteString(doc)
 			builder.WriteString(fmt.Sprintf("%s\"%s\": %v", indent, name, value))
 		}
 
 		comma = ",\n"
+		if blockSpacing {
+			comma += "\n"
+		}
 	}
 
 	if !embedded {
@@ -251,7 +274,7 @@ func typeZero(field *distiller.FieldInfo) interface{} {
 		value = make([]interface{}, 0)
 		return value
 	} else if field.Layout == distiller.LayoutMap {
-		value = make(map[interface{}]interface{}, 0)
+		value = make(map[interface{}]interface{})
 		return value
 	}
 

@@ -91,6 +91,38 @@ Tags: map[json:reserved]
 Doc: "Shadowing field.\n"
 `,
 		`Type: string
+Name: "A"
+Layout: 0
+Element type: <nil>
+IsEmbedded: false
+Tags: map[]
+Doc: "Field A\n"
+`,
+		`Type: int
+Name: "B"
+Layout: 0
+Element type: <nil>
+IsEmbedded: false
+Tags: map[]
+Doc: "Field B\n"
+`,
+		`Type: github.com/marco-sacchi/go2jsonc/testdata.EmptySubType
+Name: "Test1"
+Layout: 0
+Element type: <nil>
+IsEmbedded: false
+Tags: map[]
+Doc: ""
+`,
+		`Type: []github.com/marco-sacchi/go2jsonc/testdata.EmptySubType
+Name: "Test2"
+Layout: 1
+Element type: github.com/marco-sacchi/go2jsonc/testdata.EmptySubType
+IsEmbedded: false
+Tags: map[]
+Doc: ""
+`,
+		`Type: string
 Name: "Name"
 Layout: 0
 Element type: <nil>
@@ -152,7 +184,7 @@ Layout: 0
 Element type: <nil>
 IsEmbedded: false
 Tags: map[]
-Doc: "User name documentation block.\nUser name comment.\n"
+Doc: "Name of the user documentation block.\nUser name comment.\n"
 `,
 		`Type: string
 Name: "Surname"
@@ -229,6 +261,10 @@ func TestFieldInfo_FormatDoc(t *testing.T) {
 		{types: true, want: "// float32 - Velocity documentation block.\n"},
 		{types: true, want: "// float32\n"},
 		{types: true, want: "// string - Shadowing field.\n"},
+		{types: true, want: "// string - Field A\n"},
+		{types: true, want: "// int - Field B\n"},
+		{types: true, want: "// testdata.EmptySubType\n"},
+		{types: true, want: "// []testdata.EmptySubType\n"},
 		{types: true, want: "// string - Name describes the protocol name.\n// Multiple line documentation test.\n// Protocol name.\n"},
 		{types: true, want: "// int - Major version.\n"},
 		{types: true, want: "// int - Minor version.\n"},
@@ -236,7 +272,7 @@ func TestFieldInfo_FormatDoc(t *testing.T) {
 		{types: true, want: "// int - Remote port.\n"},
 		{types: true, want: "// testdata.Protocol - Default protocol.\n"},
 		{types: true, want: "// []testdata.Protocol - Optional supported protocols.\n"},
-		{types: true, want: "// string - User name documentation block.\n// User name comment.\n"},
+		{types: true, want: "// string - Name of the user documentation block.\n// User name comment.\n"},
 		{types: true, want: "// string - User surname comment.\n"},
 		{types: true, want: "// int - Age documentation block.\n// User age.\n"},
 		{types: true, want: "// int - Number of stars achieved.\n"},
@@ -264,6 +300,10 @@ func TestFieldInfo_FormatDoc(t *testing.T) {
 		{types: false, want: "// Velocity documentation block.\n"},
 		{types: false, want: ""},
 		{types: false, want: "// Shadowing field.\n"},
+		{types: false, want: "// Field A\n"},
+		{types: false, want: "// Field B\n"},
+		{types: false, want: ""},
+		{types: false, want: ""},
 		{types: false, want: "// Name describes the protocol name.\n// Multiple line documentation test.\n// Protocol name.\n"},
 		{types: false, want: "// Major version.\n"},
 		{types: false, want: "// Minor version.\n"},
@@ -271,7 +311,7 @@ func TestFieldInfo_FormatDoc(t *testing.T) {
 		{types: false, want: "// Remote port.\n"},
 		{types: false, want: "// Default protocol.\n"},
 		{types: false, want: "// Optional supported protocols.\n"},
-		{types: false, want: "// User name documentation block.\n// User name comment.\n"},
+		{types: false, want: "// Name of the user documentation block.\n// User name comment.\n"},
 		{types: false, want: "// User surname comment.\n"},
 		{types: false, want: "// Age documentation block.\n// User age.\n"},
 		{types: false, want: "// Number of stars achieved.\n"},
@@ -356,6 +396,31 @@ func TestFieldInfo(t *testing.T) {
 			Doc:  "Shadowing field.\n",
 		},
 		// testdata/empty.go
+		// testdata/empty_defs.go
+		{
+			Type: "string", Name: "A",
+			Layout: LayoutSingle, IsEmbedded: false,
+			Tags: nil,
+			Doc:  "Field A\n",
+		},
+		{
+			Type: "int", Name: "B",
+			Layout: LayoutSingle, IsEmbedded: false,
+			Tags: nil,
+			Doc:  "Field B\n",
+		},
+		{
+			Type: "github.com/marco-sacchi/go2jsonc/testdata.EmptySubType", Name: "Test1",
+			Layout: LayoutSingle, IsEmbedded: false,
+			Tags: nil,
+			Doc:  "",
+		},
+		{
+			Type: "[]github.com/marco-sacchi/go2jsonc/testdata.EmptySubType", Name: "Test2",
+			Layout: LayoutArray, IsEmbedded: false,
+			Tags: nil,
+			Doc:  "",
+		},
 		// testdata/nesting.go
 		{
 			Type: "string", Name: "Name",
@@ -404,7 +469,7 @@ func TestFieldInfo(t *testing.T) {
 			Type: "string", Name: "Name",
 			Layout: LayoutSingle, IsEmbedded: false,
 			Tags: nil,
-			Doc:  "User name documentation block.\nUser name comment.\n",
+			Doc:  "Name of the user documentation block.\nUser name comment.\n",
 		},
 		{
 			Type: "string", Name: "Surname",

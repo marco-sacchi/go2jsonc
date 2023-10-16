@@ -1,0 +1,18 @@
+{
+	// Identifier documentation block.
+	"id": 1234,
+
+	// Enabled comment line.
+	"Enabled": false,
+
+	// Position comment line.
+	"position": 1,
+
+	// Velocity documentation block.
+	"velocity": 2,
+
+	"accel": 0.23,
+
+	// Shadowing field.
+	"reserved": "Shadowing"
+}
