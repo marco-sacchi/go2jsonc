@@ -109,6 +109,7 @@ Rendered output:
     "NetStatus": {
         // bool - Connected flag comment.
         "Connected": true,
+      
         // network.ConnState - Connection state comment.
         // Allowed values:
         // StateDisconnected = 0  StateDisconnected signals the Disconnected state.
@@ -118,9 +119,11 @@ Rendered output:
         // StateReconnecting = 6  StateReconnecting signals the Reconnecting state.
         "State": 0
     },
+
     // int - PacketLoss documentation block.
     // Packet loss comment.
     "packet_loss": 64,
+
     // int - Round-trip time in milliseconds.
     "round_trip_time": 123
 }
@@ -204,4 +207,4 @@ comments to be easily understandable.
 
 ## License
 
-MIT License, Copyright (c) 2022 Marco Sacchi
+MIT License, Copyright (c) 2022-2023 Marco Sacchi

@@ -15,7 +15,7 @@ import (
 type PackageInfo struct {
 	Package     *packages.Package
 	Imported    []*packages.Package     // Packages imported from this.
-	Structs     map[string]*StructInfo  // Structures declared on this packages mapped by fully qualified name.
+	Structs     map[string]*StructInfo  // Structures declared on this package mapped by fully qualified name.
 	TypedConsts map[string][]*ConstInfo // Typed constants grouped by fully qualified type name.
 }
 
@@ -112,7 +112,7 @@ func (p *PackageInfo) readPackage(dir string) error {
 		}
 
 		for _, astFile := range p.Package.Syntax {
-			// Use the position to determine whether or not the type is declared in this file.
+			// Use the position to test if the type is declared in this file.
 			if astFile.Pos() >= typeName.Pos() || typeName.Pos() >= astFile.End() {
 				continue
 			}

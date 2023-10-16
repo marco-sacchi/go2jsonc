@@ -8,7 +8,7 @@ package testdata
 
 // Simple defines a simple user.
 type Simple struct {
-	// User name documentation block.
+	// Name of the user documentation block.
 	Name    string // User name comment.
 	Surname string // User surname comment.
 
@@ -27,7 +27,6 @@ type Simple struct {
 func SimpleDefaults() *Simple {
 	return &Simple{
 		Name:       "John",
-		Surname:    "Doe",
 		Age:        30,
 		StarsCount: 5,
 		Addresses: []string{

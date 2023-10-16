@@ -1,10 +1,10 @@
 {
-	// User name documentation block.
+	// Name of the user documentation block.
 	// User name comment.
 	"Name": "John",
 
 	// User surname comment.
-	"Surname": "Doe",
+	"Surname": "",
 
 	// Age documentation block.
 	// User age.

@@ -1,6 +1,10 @@
 package testdata
 
 //go:generate go2jsonc -type EmptyDefs -out empty_defs.jsonc
+//go:generate go2jsonc -type EmptyDefs -doc-types NotFields -out empty_defs_fields.jsonc
+//go:generate go2jsonc -type EmptyDefs -doc-types NotStructFields -out empty_defs_struct.jsonc
+//go:generate go2jsonc -type EmptyDefs -doc-types NotArrayFields -out empty_defs_array.jsonc
+//go:generate go2jsonc -type EmptyDefs -doc-types NotMapFields -out empty_defs_map.jsonc
 
 // EmptySubType define a struct with non-initialized fields.
 type EmptySubType struct {

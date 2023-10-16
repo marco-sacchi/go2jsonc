@@ -11,7 +11,7 @@ import (
 	"github.com/marco-sacchi/go2jsonc"
 )
 
-const version = "0.3.2"
+const version = "0.3.3"
 
 func main() {
 	flag.Usage = usage
@@ -89,7 +89,7 @@ func main() {
 }
 
 func usage() {
-	println("go2jsonc v" + version + " Copyright 2022 Marco Sacchi\n")
+	println("go2jsonc v" + version + " Copyright 2022-2023 Marco Sacchi\n")
 
 	println("Usage:")
 	println("  go2jsonc -type <type-name> [-doc-types bits] [-out jsonc-filename] [package-dir]\n")

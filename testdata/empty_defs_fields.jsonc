@@ -1,0 +1,18 @@
+{
+	"Test1": {
+		// Field A
+		"A": "",
+
+		// Field B
+		"B": 0
+	},
+	"Test2": [
+		{
+			// Field A
+			"A": "",
+
+			// Field B
+			"B": 0
+		}
+	]
+}
